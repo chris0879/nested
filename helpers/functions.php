@@ -18,19 +18,6 @@ function redirect($url ='/'){
 
 
 
-function getFromGet($param,  $default= null, $type ='string'){
-    if($type === 'int'){
-        $param = filter_input(INPUT_GET, $param, FILTER_SANITIZE_NUMBER_INT)  ;
-    } else {
-        $param = filter_input(INPUT_GET, $param, FILTER_SANITIZE_STRING)  ;
-    }
-
-    $ret = $param? $param : $default;
-
-    return $ret;
-}
-
-
 
 function validateDate($date, $format = 'Y-m-d')
 {
