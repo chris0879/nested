@@ -14,8 +14,9 @@ class Nested{
         $this->conn = $conn;
     }
 
-    public function getNestedSet($idNode, $language_select, $search, $page_num, $page_size)
+    public function getNestedSet(int $idNode, string $language_select, ?string $search, ?int $page_num, ?int $page_size)
     {
+       
         $sql_mode = $this->conn->exec("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
         // response Api
         $api = [
@@ -36,7 +37,7 @@ class Nested{
            return $api;
         }
          // ritorna un array che contiene il nome dei nodi // $language_all['name'][$idNode][$language_select]
-        $language_all = $this->getAllLanguage($search, $idNode);
+        $language_all = $this->getAllLanguage($search, $idNode, $language_select);
 
         $this->setLanguage($language_all);
 
@@ -68,13 +69,13 @@ class Nested{
     }
 
 
-    public function getAllLanguage($search, $idNode)
+    public function getAllLanguage($search, $idNode, $language_select)
     {  
         $trova = "%$search%";
         $name = [];
         $id_search = [];
-        $query = $this->conn->prepare("SELECT * from node_tree_names WHERE NodeName LIKE ? or idNode = ? ");
-        $query->execute([$trova,$idNode]);
+        $query = $this->conn->prepare("SELECT * from node_tree_names WHERE language = ? AND NodeName LIKE ? or idNode = ? ");
+        $query->execute([$language_select,$trova,$idNode]);
         $rows =  $query->fetchAll();
         //$query->debugDumpParams();
         $n =  count($rows);
@@ -126,7 +127,7 @@ class Nested{
     }
     
 
-    public function countChildren($iLeft, $iRight, $descendants)
+    public function countChildren(int $iLeft, int $iRight, $descendants):int
     {
         $child_count = 0;
         foreach($descendants as $row){
@@ -138,7 +139,7 @@ class Nested{
     }
 
 
-    public function setNode($obj,$language_select)
+    public function setNode(object $obj, string $language_select)
     {
         $array_node = array(
             'node_id' => $obj->idNode,
@@ -150,7 +151,7 @@ class Nested{
     }
 
 
-    public function getNode()
+    public function getNode():array
     {
         return $this->node;
     }
